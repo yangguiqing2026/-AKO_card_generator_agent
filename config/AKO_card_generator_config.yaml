@@ -1,0 +1,15 @@
+# ============================================
+# Author: AKO_studio
+# Agent: AKO_card_generator
+# Configuration File
+# ============================================
+
+agent:
+  id: "AKO_card_generator"
+  name: "Ako Card Generator"
+  log_level: "INFO"
+
+# TODO: Add agent-specific configuration below
+# example:
+#   param1: "value1"
+#   param2: 100
