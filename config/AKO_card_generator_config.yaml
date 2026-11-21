@@ -7,9 +7,31 @@
 agent:
   id: "AKO_card_generator"
   name: "Ako Card Generator"
+  version: "1.0.0"
+  author: "AKO_studio"
+  created_date: "2026-07-30"
+  status: "active"
+  description: "Ako Card Generator Agent for AKO fleet automation."
+  capabilities:
+    - "Automated task processing"
+    - "CLI-driven operation"
+    - "Agent Card YAML generation from config"
+  dependencies:
+    - "python>=3.9"
+    - "pyyaml>=6.0"
+  interfaces:
+    input: "config.yaml / CLI 参数"
+    output: "AKO_agent_card.yaml"
+  health_probe:
+    endpoint: "/health"
+    expected_response: "ok"
+  registry:
+    registry_agent: "AKO_registry_agent"
+    registered: false
+  tags:
+    - "design"
+    - "document"
   log_level: "INFO"
 
-# TODO: Add agent-specific configuration below
-# example:
-#   param1: "value1"
-#   param2: 100
+output:
+  path: "AKO_agent_card.yaml"

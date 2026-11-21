@@ -2,5 +2,5 @@
 # Author: AKO_studio
 # Agent: AKO_card_generator
 # ============================================
-python>=3.9
+# Python 版本要求见 README.md（>=3.9），不在这里声明。
 pyyaml>=6.0
