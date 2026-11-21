@@ -401,13 +401,25 @@ def _render_split(image, draw, fields, colors, logo, font_path, sizes, logo_layo
 
     draw.rectangle([0, 0, split, h], fill=_rgb(colors["primary"]))
     x, y = int(split * 0.12), int(h * 0.12)
+    max_text_w = split - 2 * x
     if logo is not None:
         image.paste(logo, (x, y), logo)
         y += logo.height + int(h * 0.06)
-    _text(draw, (x, y), _field(fields, "company"), f["company"], colors["on_primary"])
+
+    def fit_font(text, font, base_size):
+        """Shrink font until text fits the left color block."""
+        size = base_size
+        while size > 10 and draw.textlength(text, font=font) > max_text_w:
+            size -= 2
+            font = find_font(size, font_path=font_path)
+        return font
+
+    _text(draw, (x, y), _field(fields, "company"),
+          fit_font(_field(fields, "company"), f["company"], f["company"].size), colors["on_primary"])
     y += f["company"].size + int(h * 0.01)
     if _field(fields, "company_en"):
-        _text(draw, (x, y), _field(fields, "company_en"), f["company_en"], colors["on_primary"])
+        en_font = fit_font(_field(fields, "company_en"), f["company_en"], f["company_en"].size)
+        _text(draw, (x, y), _field(fields, "company_en"), en_font, colors["on_primary"])
 
     rx = split + int(h * 0.10)
     ry = int(h * 0.14)
@@ -483,14 +495,19 @@ def _render_elegant(image, draw, fields, colors, logo, font_path, sizes, logo_la
     pad = int(h * 0.12)
 
     draw.rectangle([0, 0, w, h], fill=_rgb(colors["primary"]))
-    heading = colors["on_primary"]
+    # On a dark ground all text/icons must use the light "on_primary" tone.
+    light = dict(colors)
+    light["primary"] = colors["on_primary"]
+    light["heading"] = colors["on_primary"]
+    light["body"] = colors["on_primary"]
+    rule_color = colors["rule"]
 
     x, y = pad, pad
     if logo is not None:
         image.paste(logo, (x, y), logo)
         y += logo.height + int(h * 0.03)
-    y = _name_block(draw, x, y, fields, f, colors)
+    y = _name_block(draw, x, y, fields, f, light)
 
-    draw.line([(x, y), (w - pad, y)], fill=_rgb(colors["rule"]), width=max(1, h // 300))
+    draw.line([(x, y), (w - pad, y)], fill=_rgb(rule_color), width=max(1, h // 300))
     y += int(h * 0.05)
-    _contact_lines(fields, icons, draw, x, y, f["body"], colors, int(h * 0.08), f["icon"])
+    _contact_lines(fields, icons, draw, x, y, f["body"], light, int(h * 0.08), f["icon"])
