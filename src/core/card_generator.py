@@ -132,14 +132,15 @@ def resolve_output_path(config, output_override=None):
     return path
 
 
-def generate_card(config_path, output_override=None):
-    """Load, validate, render and atomically write an Agent Card.
+def write_card(card, config=None, output_override=None):
+    """Render a built card and atomically write it to disk.
 
-    Returns (output_path, card_mapping).
+    The output path is resolved from ``output_override``, the ``output``
+    section of ``config``, or the default name, in that order.
+
+    Returns the resolved output path.
     """
-    config = load_config(config_path)
-    agent = validate_card_config(config)
-    card = build_card(agent)
+    config = config or {}
     target = resolve_output_path(config, output_override)
     target.parent.mkdir(parents=True, exist_ok=True)
 
@@ -148,4 +149,16 @@ def generate_card(config_path, output_override=None):
     with temp_path.open("w", encoding="utf-8", newline="\n") as handle:
         handle.write(text)
     temp_path.replace(target)
+    return target
+
+
+def generate_card(config_path, output_override=None):
+    """Load, validate, render and atomically write an Agent Card.
+
+    Returns (output_path, card_mapping).
+    """
+    config = load_config(config_path)
+    agent = validate_card_config(config)
+    card = build_card(agent)
+    target = write_card(card, config, output_override)
     return target, card
